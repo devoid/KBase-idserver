@@ -3,12 +3,6 @@ use warnings;
 
 use strict;
 use warnings;
-use perl5lib;
-BEGIN { 
-#	my $KBASE_DIR = $ENV{'KBASE_DIR'};
-#	$ENV{'SYS_PROP_KB'} = "$KBASE_DIR/Env/sys.properties.test";
-	setPERL5LIB(); 
-}
 
 use Test::More tests => 52;
 use Data::Dumper;
