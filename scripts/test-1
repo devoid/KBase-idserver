@@ -1,0 +1,8 @@
+use IDServerAPIClient;
+
+$c = IDServerAPIClient->new('http://localhost:5000');
+use Data::Dumper;
+$r = $c->external_ids_to_kbase_ids('seed', [110..115]);
+print Dumper($r);
+$x = $c->kbase_ids_to_external_ids([values %$r]);
+print Dumper($x);
