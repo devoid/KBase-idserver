@@ -3,6 +3,7 @@ use warnings;
 
 use Test::More tests => 52;
 use Data::Dumper;
+use String::Random;
 
 use IDServerAPIClient;
 my $obj;
@@ -240,10 +241,11 @@ isnt($@, undef, 'Call with too few parameters failed properly');
 
 $return = $id_server->register_allocated_ids('TEST','SEED', $test_hash); 
 
-#-- Tests 50 - Test the data just added
+#-- Tests 50-53 - Test the data just added
 $return = $id_server->kbase_ids_to_external_ids(["TEST.$return_test"]);
 
 @id_keys = keys(%$return);
+is(scalar @id_keys, 1, "Return one key");
 
 foreach (@id_keys)
 {
@@ -253,8 +255,55 @@ foreach (@id_keys)
 
 }
 
+#
+#  Now what happens when we try to register more than the two allocated IDs
+#    put in numbers that I have made up
+#
+$test_hash =  { 'external_id6' => 11111, 'external_id7' => 22222,  'external_id8' => 33333, 'external_id9' => 44444 };
+$return = $id_server->register_allocated_ids('TEST','SEED', $test_hash); 
 
+#-- Tests 54-55 - Test the data just added
+$return = $id_server->kbase_ids_to_external_ids(["TEST.11111"]);
+@id_keys = keys(%$return);
+is(scalar @id_keys, 1, "Return one key if asking for 11111");
+foreach (@id_keys)
+{
+        isnt($return->{$_}->[1], 'external_id6', "Is the external_id external_id6 - This wasn't allocated");
+}
 
-#print "DATA DUMPER\n";
-#my @x = $id_server->kbase_ids_to_external_ids(['kb|g.3.peg.2394']);
-#print Dumper(\@x);
+#-- Tests 56-57 - Test the data just added
+$return = $id_server->kbase_ids_to_external_ids(["TEST.44444"]);
+@id_keys = keys(%$return);
+is(scalar @id_keys, 1, "Return one key if asking for 44444");
+foreach (@id_keys)
+{
+        isnt($return->{$_}->[1], 'external_id9', "Is the external_id external_id9 - This wasn't allocated");
+}
+
+my $foo = 'NAN';
+
+$test_hash =  { 'external_id' => $foo };
+$return = $id_server->register_allocated_ids('TEST','SEED', $test_hash); 
+
+#-- Tests 58-59 - Test the data just added
+$return = $id_server->kbase_ids_to_external_ids(["TEST.$foo"]);
+@id_keys = keys(%$return);
+is(scalar @id_keys, 1, "Return one key when asking for NAN");
+foreach (@id_keys)
+{
+        isnt($return->{$_}->[1], 'external_id', "Is the external_id external_id6 - This wasn't allocated");
+}
+
+#-- Tests 60-61 - Test the data just added
+$foo = new String::Random;
+my $foo2 = $foo->randregex('\d\d\d\d\d\d\d\d\d'); 
+
+$test_hash =  { 'external_id' => $foo2 };
+$return = $id_server->register_allocated_ids('TEST','SEED', $test_hash); 
+$return = $id_server->kbase_ids_to_external_ids(["TEST.$foo2"]);
+@id_keys = keys(%$return);
+is(scalar @id_keys, 1, "Return one key when asking for large random number");
+foreach (@id_keys)
+{
+        isnt($return->{$_}->[1], 'external_id', "Is the external_id external_id6 - This wasn't allocated");
+}
