@@ -25,7 +25,7 @@ __PACKAGE__->mk_accessors(qw(conn db coll_data coll_next));
 sub _init_instance
 {
     my($self) = @_;
-    my $conn = MongoDB::Connection->new(host => 'ash.mcs.anl.gov');
+    my $conn = MongoDB::Connection->new(host => 'mongodb.kbase.us');
     my $db = $conn->idserver_db;
     my $coll_data = $db->data;
     my $coll_next = $db->next;
