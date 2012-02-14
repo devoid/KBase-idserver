@@ -36,7 +36,8 @@ can_ok($obj, qw[    kbase_ids_to_external_ids
 #  Test 4 - Can a new object be created with valid parameter? 
 #
 
-my $id_server_url = "http://bio-data-1.mcs.anl.gov/services/idserver";
+my $id_server_url = "http://localhost:5000/";
+#my $id_server_url = "http://bio-data-1.mcs.anl.gov/services/idserver";
 my $id_server = IDServerAPIClient->new($id_server_url);
 ok( defined $id_server, "Did an object get defined" );               
 #
@@ -78,6 +79,7 @@ $return = $id_server->external_ids_to_kbase_ids('SEED', [$test_seed_id, 'fig|833
 is(ref($return), 'HASH', "Use Valid data: external_ids_to_kbase_ids returns a hash");
 
 @id_keys = keys(%$return);
+print Dumper($return);
 is(scalar @id_keys, 2, "Use Valid data: hash is not empty and has two keys");
 
 #-- Tests 14 and 15 - Are the return values scalar.  

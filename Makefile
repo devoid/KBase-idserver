@@ -10,6 +10,12 @@ SERVER_SPEC = IDServer-API.spec
 SERVER_MODULE = IDServerAPI
 SERVICE = idserver
 
+SERVICE_DIR = $(TARGET)/services/$(SERVICE)
+
+TPAGE = $(DEPLOY_RUNTIME)/bin/tpage
+TPAGE_ARGS = --define kb_top=$(TARGET) --define kb_runtime=$(DEPLOY_RUNTIME) --define kb_service_name=$(SERVICE)
+
+
 all: bin server
 
 what:
@@ -25,7 +31,10 @@ bin: $(BIN_PERL)
 $(BIN_DIR)/%: scripts/%.pl 
 	$(TOOLS_DIR)/wrap_perl '$$KB_TOP/modules/$(CURRENT_DIR)/$<' $@
 
-deploy: deploy-scripts deploy-libs deploy-services
+deploy: deploy-dir deploy-scripts deploy-libs deploy-services
+
+deploy-dir:
+	if [ ! -d $(SERVICE_DIR) ] ; then mkdir $(SERVICE_DIR) ; fi
 
 deploy-scripts:
 	export KB_TOP=$(TARGET); \
@@ -43,7 +52,7 @@ deploy-libs:
 	rsync -arv lib/. $(TARGET)/lib/.
 
 deploy-services:
-	export KB_TOP=$(TARGET); \
-	export KB_RUNTIME=$(DEPLOY_RUNTIME); \
-	export KB_PERL_PATH=$(TARGET)/lib bash ; \
-	bash $(TOOLS_DIR)/wrap_starman.sh "$(TARGET)/lib/$(SERVER_MODULE).psgi" $(TARGET)/services/$(SERVICE)
+	$(TPAGE) $(TPAGE_ARGS) service/start_service.tt > $(TARGET)/services/$(SERVICE)/start_service
+	chmod +x $(TARGET)/services/$(SERVICE)/start_service
+	$(TPAGE) $(TPAGE_ARGS) service/stop_service.tt > $(TARGET)/services/$(SERVICE)/stop_service
+	chmod +x $(TARGET)/services/$(SERVICE)/stop_service
