@@ -20,6 +20,8 @@ TPAGE_ARGS = --define kb_top=$(TARGET) --define kb_runtime=$(DEPLOY_RUNTIME) --d
 
 all: bin server
 
+echo:
+	@echo $(SERVICE_PORT)
 what:
 	@echo $(BIN_PERL)
 
@@ -33,7 +35,10 @@ bin: $(BIN_PERL)
 $(BIN_DIR)/%: scripts/%.pl 
 	$(TOOLS_DIR)/wrap_perl '$$KB_TOP/modules/$(CURRENT_DIR)/$<' $@
 
-deploy: deploy-dir deploy-scripts deploy-libs deploy-services deploy-monit
+deploy: deploy-service
+
+deploy-service: deploy-dir deploy-scripts deploy-libs deploy-services deploy-monit
+deploy-client: deploy-dir deploy-scripts deploy-libs 
 
 deploy-dir:
 	if [ ! -d $(SERVICE_DIR) ] ; then mkdir $(SERVICE_DIR) ; fi
