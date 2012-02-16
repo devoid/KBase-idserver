@@ -37,11 +37,12 @@ $(BIN_DIR)/%: scripts/%.pl
 
 deploy: deploy-service
 
-deploy-service: deploy-dir deploy-scripts deploy-libs deploy-services deploy-monit
-deploy-client: deploy-dir deploy-scripts deploy-libs 
+deploy-service: deploy-dir deploy-scripts deploy-libs deploy-services deploy-monit deploy-doc
+deploy-client: deploy-dir deploy-scripts deploy-libs  deploy-doc
 
 deploy-dir:
 	if [ ! -d $(SERVICE_DIR) ] ; then mkdir $(SERVICE_DIR) ; fi
+	if [ ! -d $(SERVICE_DIR)/webroot ] ; then mkdir $(SERVICE_DIR)/webroot ; fi
 
 deploy-scripts:
 	export KB_TOP=$(TARGET); \
@@ -66,3 +67,7 @@ deploy-services:
 
 deploy-monit:
 	$(TPAGE) $(TPAGE_ARGS) service/process.$(SERVICE).tt > $(TARGET)/services/$(SERVICE)/process.$(SERVICE)
+
+deploy-doc:
+	$(DEPLOY_RUNTIME)/bin/pod2html -t "ID Server API" lib/IDServerAPIImpl.pm > doc/idserver_api.html
+	cp doc/*html $(SERVICE_DIR)/webroot/.
