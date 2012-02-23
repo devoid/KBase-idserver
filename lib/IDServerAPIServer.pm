@@ -11,6 +11,16 @@ has 'user_auth' => (is => 'ro', isa => 'UserAuth');
 has 'valid_methods' => (is => 'ro', isa => 'HashRef', lazy => 1,
 			builder => '_build_valid_methods');
 
+our $CallContext;
+
+our %return_counts = (
+        'kbase_ids_to_external_ids' => 1,
+        'external_ids_to_kbase_ids' => 1,
+        'register_ids' => 1,
+        'allocate_id_range' => 1,
+        'register_allocated_ids' => 0,
+);
+
 sub _build_valid_methods
 {
     my($self) = @_;
@@ -38,15 +48,25 @@ sub call_method {
 	$data->{arguments} = $actual_args;
 	
 	
-        # Module IDServerAPI does not require authentication.
+        # Service IDServerAPI does not require authentication.
 	
     }
     
     my $new_isa = $self->get_package_isa($module);
     no strict 'refs';
     local @{"${module}::ISA"} = @$new_isa;
-    my @result = $module->$method($ctx, @{ $data->{arguments} });
-    return \@result;
+    local $CallContext = $ctx;
+    my @result = $module->$method(@{ $data->{arguments} });
+    my $result;
+    if ($return_counts{$method} == 1)
+    {
+        $result = [[$result[0]]];
+    }
+    else
+    {
+        $result = \@result;
+    }
+    return $result;
 }
 
 
@@ -69,7 +89,7 @@ sub get_method
     if (!$self->valid_methods->{$method})
     {
 	$self->exception('NoSuchMethod',
-			 "'$method' is not a valid method in module IDServerAPI.");
+			 "'$method' is not a valid method in service IDServerAPI.");
     }
 	
     my $inst = $self->instance_dispatch->{$package};

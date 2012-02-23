@@ -1,12 +1,18 @@
 use IDServerAPIImpl;
+
 use IDServerAPIServer;
 
 
 
-my $impl_obj = IDServerAPIImpl->new;
+my @dispatch;
 
-my $server = IDServerAPIServer->new(instance_dispatch => { 'IDServerAPI' => $impl_obj },
+{
+    my $obj = IDServerAPIImpl->new;
+    push(@dispatch, 'IDServerAPI' => $obj);
+}
 
+
+my $server = IDServerAPIServer->new(instance_dispatch => { @dispatch },
 				allow_get => 0,
 			       );
 

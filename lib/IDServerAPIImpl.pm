@@ -25,7 +25,8 @@ __PACKAGE__->mk_accessors(qw(conn db coll_data coll_next));
 sub _init_instance
 {
     my($self) = @_;
-    my $conn = MongoDB::Connection->new(host => 'mongodb.kbase.us');
+    my $conn = MongoDB::Connection->new(host => 'ash.mcs.anl.gov');
+    #my $conn = MongoDB::Connection->new(host => 'mongodb.kbase.us');
     my $db = $conn->idserver_db;
     my $coll_data = $db->data;
     my $coll_next = $db->next;
@@ -43,13 +44,13 @@ sub _init_instance
 
 sub new
 {
-    my($class) = @_;
+    my($class, @args) = @_;
     my $self = {
     };
+    bless $self, $class;
     #BEGIN_CONSTRUCTOR
     #END_CONSTRUCTOR
 
-    bless $self, $class;
     if ($self->can('_init_instance'))
     {
 	$self->_init_instance();
@@ -110,10 +111,9 @@ If no external ID is associated with the KBase id, no entry will be present in t
 
 sub kbase_ids_to_external_ids
 {
-    my($self, $ctx, $ids) = @_;
-    
+    my($self, $ids) = @_;
+    my $ctx = $IDServerAPIServer::CallContext;
     my($return);
-    
     #BEGIN kbase_ids_to_external_ids
             
     my $iter = $self->coll_data->find({ kb_id => { '$in' => $ids }});
@@ -125,9 +125,7 @@ sub kbase_ids_to_external_ids
     }
     
     #END kbase_ids_to_external_ids
-    
     return($return);
-    
 }
 
 
@@ -180,10 +178,9 @@ If no KBase ID is associated with the external id, no entry will be present in t
 
 sub external_ids_to_kbase_ids
 {
-    my($self, $ctx, $external_db, $ext_ids) = @_;
-    
+    my($self, $external_db, $ext_ids) = @_;
+    my $ctx = $IDServerAPIServer::CallContext;
     my($return);
-    
     #BEGIN external_ids_to_kbase_ids
             
 my $n = @$ext_ids;
@@ -198,9 +195,7 @@ print STDERR "$$ start find on $n\n";
 print STDERR "$$ finish find on $n\n";
 
     #END external_ids_to_kbase_ids
-    
     return($return);
-    
 }
 
 
@@ -251,16 +246,18 @@ kbase_id is a string
 Register a set of identifiers. All will be assigned identifiers with the given
 prefix.
 
+If an external ID has already been registered, the existing registration will be returned instead 
+of a new ID being allocated.
+
 =back
 
 =cut
 
 sub register_ids
 {
-    my($self, $ctx, $prefix, $db_name, $ids) = @_;
-    
+    my($self, $prefix, $db_name, $ids) = @_;
+    my $ctx = $IDServerAPIServer::CallContext;
     my($return);
-    
     #BEGIN register_ids
 
     #
@@ -326,9 +323,7 @@ sub register_ids
     $self->coll_data->batch_insert(\@vals) if (@vals);
 
     #END register_ids
-    
     return($return);
-    
 }
 
 
@@ -379,10 +374,9 @@ The return is the first identifier allocated.
 
 sub allocate_id_range
 {
-    my($self, $ctx, $kbase_id_prefix, $count) = @_;
-    
+    my($self, $kbase_id_prefix, $count) = @_;
+    my $ctx = $IDServerAPIServer::CallContext;
     my($starting_value);
-    
     #BEGIN allocate_id_range
             
     my $res = $self->db->run_command({
@@ -405,9 +399,7 @@ sub allocate_id_range
     $starting_value = $res->{value}->{next_val};
 
     #END allocate_id_range
-    
     return($starting_value);
-    
 }
 
 
@@ -462,8 +454,8 @@ Does not return a value.
 
 sub register_allocated_ids
 {
-    my($self, $ctx, $prefix, $db_name, $assignments) = @_;
-    
+    my($self, $prefix, $db_name, $assignments) = @_;
+    my $ctx = $IDServerAPIServer::CallContext;
     #BEGIN register_allocated_ids
             
     my @vals;
@@ -477,9 +469,7 @@ sub register_allocated_ids
     $self->coll_data->batch_insert(\@vals) if @vals;
 
     #END register_allocated_ids
-    
-    return;
-    
+    return();
 }
 
 
