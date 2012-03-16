@@ -3,7 +3,7 @@ The KBase ID provides access to the mappings between KBase identifiers and
 external identifiers, the original identifiers for data that was migrated from
 other databases into the KBase.
 */
-module IDServerAPI
+module IDServerAPI : IDServerAPI
 {
 /* 
 A KBase ID is string starting with the characters "kb|".

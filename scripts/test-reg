@@ -1,8 +1,0 @@
-use IDServerAPIClient;
-
-$c = IDServerAPIClient->new('http://localhost:5000');
-use Data::Dumper;
-
-$r  = $c->register_ids('kb|g', 'seed', [1..1000]);
-
-print Dumper($r);

@@ -7,7 +7,9 @@ BIN_PERL = $(addprefix $(BIN_DIR)/,$(basename $(notdir $(SRC_PERL))))
 DEPLOY_PERL = $(addprefix $(TARGET)/bin/,$(basename $(notdir $(SRC_PERL))))
 
 SERVER_SPEC = IDServer-API.spec
-SERVER_MODULE = IDServerAPI
+
+SERVICE_MODULE = lib/Bio/KBase/IDServer/Service.pm
+
 SERVICE = idserver
 SERVICE_PORT = 7031
 
@@ -25,10 +27,10 @@ echo:
 what:
 	@echo $(BIN_PERL)
 
-server: lib/$(SERVER_MODULE)Server.pm
+server: $(SERVICE_MODULE)
 
-lib/$(SERVER_MODULE)Server.pm: $(SERVER_SPEC)
-	compile_typespec $(SERVER_SPEC) lib
+$(SERVICE_MODULE): $(SERVER_SPEC)
+	./recompile_typespec 
 
 bin: $(BIN_PERL)
 

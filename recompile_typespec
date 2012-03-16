@@ -1,0 +1,9 @@
+base=Bio::KBase::IDServer
+compile_typespec \
+	-impl $base::Impl \
+	-service $base::Service \
+	-psgi IDServer.psgi \
+	-client $base::Client \
+	-js IDServer \
+	-py IDServer \
+	IDServer-API.spec lib
