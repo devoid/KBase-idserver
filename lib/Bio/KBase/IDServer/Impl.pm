@@ -381,6 +381,8 @@ sub register_ids
     print Dumper($res);
     
     my $start = $res->{value}->{next_val};
+    # case where original next_value was undefined
+    $start = 0 unless(defined($start));
 
     my @vals;
 
@@ -487,6 +489,8 @@ sub allocate_id_range
     }
 
     $starting_value = $res->{value}->{next_val};
+    # case where original next_value was undefined
+    $starting_value = 0 unless(defined($starting_value));
 
     #END allocate_id_range
     my @_bad_returns;
