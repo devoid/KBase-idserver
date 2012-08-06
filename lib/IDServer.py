@@ -95,6 +95,22 @@ class IDServerAPI:
         else:
             return None
 
+    def kbase_ids_with_prefix(self, prefix):
+
+        arg_hash = { 'method': 'IDServerAPI.kbase_ids_with_prefix',
+                     'params': [prefix],
+                     'version': '1.1'
+                     }
+
+        body = json.dumps(arg_hash)
+        resp_str = urllib.urlopen(self.url, body).read()
+        resp = json.loads(resp_str)
+
+        if 'result' in resp:
+            return resp['result'][0]
+        else:
+            return None
+
 
 
 

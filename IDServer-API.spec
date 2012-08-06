@@ -78,6 +78,11 @@ Does not return a value.
 */
     funcdef register_allocated_ids(kbase_id_prefix prefix, external_db db_name, 
     	    	   		   mapping<external_id ext_id, int idx> assignments) returns();
-
-
+/*
+Given an ID prefix, return the set of KBase ids that match that prefix.
+*/
+    
+    funcdef kbase_ids_with_prefix(kbase_id_prefix prefix)
+        returns(mapping<kbase_id, mapping<external_db, external_id>>);
 };
+    

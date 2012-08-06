@@ -1,5 +1,6 @@
 package Bio::KBase::IDServer::Impl;
 use strict;
+use Bio::KBase::Exceptions;
 
 =head1 NAME
 
@@ -39,7 +40,7 @@ sub _init_instance
 
     if (!$host)
     {
-	$host = "mongodb.kbase.us";
+	$host = "localhost";
 	warn "No deployment configuration found; falling back to $host";
     }
 
@@ -135,7 +136,17 @@ If no external ID is associated with the KBase id, no entry will be present in t
 
 sub kbase_ids_to_external_ids
 {
-    my($self, $ids) = @_;
+    my $self = shift;
+    my($ids) = @_;
+
+    my @_bad_arguments;
+    (ref($ids) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument \"ids\" (value was \"$ids\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to kbase_ids_to_external_ids:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'kbase_ids_to_external_ids');
+    }
+
     my $ctx = $Bio::KBase::IDServer::Service::CallContext;
     my($return);
     #BEGIN kbase_ids_to_external_ids
@@ -149,6 +160,13 @@ sub kbase_ids_to_external_ids
     }
     
     #END kbase_ids_to_external_ids
+    my @_bad_returns;
+    (ref($return) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to kbase_ids_to_external_ids:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'kbase_ids_to_external_ids');
+    }
     return($return);
 }
 
@@ -202,7 +220,18 @@ If no KBase ID is associated with the external id, no entry will be present in t
 
 sub external_ids_to_kbase_ids
 {
-    my($self, $external_db, $ext_ids) = @_;
+    my $self = shift;
+    my($external_db, $ext_ids) = @_;
+
+    my @_bad_arguments;
+    (!ref($external_db)) or push(@_bad_arguments, "Invalid type for argument \"external_db\" (value was \"$external_db\")");
+    (ref($ext_ids) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument \"ext_ids\" (value was \"$ext_ids\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to external_ids_to_kbase_ids:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'external_ids_to_kbase_ids');
+    }
+
     my $ctx = $Bio::KBase::IDServer::Service::CallContext;
     my($return);
     #BEGIN external_ids_to_kbase_ids
@@ -219,6 +248,13 @@ print STDERR "$$ start find on $n\n";
 print STDERR "$$ finish find on $n\n";
 
     #END external_ids_to_kbase_ids
+    my @_bad_returns;
+    (ref($return) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to external_ids_to_kbase_ids:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'external_ids_to_kbase_ids');
+    }
     return($return);
 }
 
@@ -279,7 +315,19 @@ of a new ID being allocated.
 
 sub register_ids
 {
-    my($self, $prefix, $db_name, $ids) = @_;
+    my $self = shift;
+    my($prefix, $db_name, $ids) = @_;
+
+    my @_bad_arguments;
+    (!ref($prefix)) or push(@_bad_arguments, "Invalid type for argument \"prefix\" (value was \"$prefix\")");
+    (!ref($db_name)) or push(@_bad_arguments, "Invalid type for argument \"db_name\" (value was \"$db_name\")");
+    (ref($ids) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument \"ids\" (value was \"$ids\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to register_ids:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'register_ids');
+    }
+
     my $ctx = $Bio::KBase::IDServer::Service::CallContext;
     my($return);
     #BEGIN register_ids
@@ -347,6 +395,13 @@ sub register_ids
     $self->coll_data->batch_insert(\@vals) if (@vals);
 
     #END register_ids
+    my @_bad_returns;
+    (ref($return) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to register_ids:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'register_ids');
+    }
     return($return);
 }
 
@@ -398,7 +453,18 @@ The return is the first identifier allocated.
 
 sub allocate_id_range
 {
-    my($self, $kbase_id_prefix, $count) = @_;
+    my $self = shift;
+    my($kbase_id_prefix, $count) = @_;
+
+    my @_bad_arguments;
+    (!ref($kbase_id_prefix)) or push(@_bad_arguments, "Invalid type for argument \"kbase_id_prefix\" (value was \"$kbase_id_prefix\")");
+    (!ref($count)) or push(@_bad_arguments, "Invalid type for argument \"count\" (value was \"$count\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to allocate_id_range:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'allocate_id_range');
+    }
+
     my $ctx = $Bio::KBase::IDServer::Service::CallContext;
     my($starting_value);
     #BEGIN allocate_id_range
@@ -423,6 +489,13 @@ sub allocate_id_range
     $starting_value = $res->{value}->{next_val};
 
     #END allocate_id_range
+    my @_bad_returns;
+    (!ref($starting_value)) or push(@_bad_returns, "Invalid type for return variable \"starting_value\" (value was \"$starting_value\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to allocate_id_range:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'allocate_id_range');
+    }
     return($starting_value);
 }
 
@@ -478,7 +551,19 @@ Does not return a value.
 
 sub register_allocated_ids
 {
-    my($self, $prefix, $db_name, $assignments) = @_;
+    my $self = shift;
+    my($prefix, $db_name, $assignments) = @_;
+
+    my @_bad_arguments;
+    (!ref($prefix)) or push(@_bad_arguments, "Invalid type for argument \"prefix\" (value was \"$prefix\")");
+    (!ref($db_name)) or push(@_bad_arguments, "Invalid type for argument \"db_name\" (value was \"$db_name\")");
+    (ref($assignments) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"assignments\" (value was \"$assignments\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to register_allocated_ids:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'register_allocated_ids');
+    }
+
     my $ctx = $Bio::KBase::IDServer::Service::CallContext;
     #BEGIN register_allocated_ids
             
@@ -494,6 +579,89 @@ sub register_allocated_ids
 
     #END register_allocated_ids
     return();
+}
+
+
+
+
+=head2 kbase_ids_with_prefix
+
+  $return = $obj->kbase_ids_with_prefix($prefix)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$prefix is a kbase_id_prefix
+$return is a reference to a hash where the key is a kbase_id and the value is a reference to a hash where the key is an external_db and the value is an external_id
+kbase_id_prefix is a string
+kbase_id is a string
+external_db is a string
+external_id is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$prefix is a kbase_id_prefix
+$return is a reference to a hash where the key is a kbase_id and the value is a reference to a hash where the key is an external_db and the value is an external_id
+kbase_id_prefix is a string
+kbase_id is a string
+external_db is a string
+external_id is a string
+
+
+=end text
+
+
+
+=item Description
+
+Given an ID prefix, return the set of KBase ids that match that prefix.
+
+=back
+
+=cut
+
+sub kbase_ids_with_prefix
+{
+    my $self = shift;
+    my($prefix) = @_;
+
+    my @_bad_arguments;
+    (!ref($prefix)) or push(@_bad_arguments, "Invalid type for argument \"prefix\" (value was \"$prefix\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to kbase_ids_with_prefix:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'kbase_ids_with_prefix');
+    }
+
+    my $ctx = $Bio::KBase::IDServer::Service::CallContext;
+    my($return);
+    #BEGIN kbase_ids_with_prefix
+    $prefix =~ s/\|/\\\|/;
+    my $regex = qr{^$prefix\.\d+$}; 
+    my $iter = $self->coll_data->find({ kb_id => { '$regex' => $regex }});
+    $return = {};
+    while (my $ent = $iter->next)
+    {
+        $return->{$ent->{kb_id}} = {} unless defined $return->{$ent->{kb_id}};
+        $return->{$ent->{kb_id}}->{$ent->{ext_name}} = $ent->{ext_id};
+    }
+    #END kbase_ids_with_prefix
+    my @_bad_returns;
+    (ref($return) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to kbase_ids_with_prefix:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'kbase_ids_with_prefix');
+    }
+    return($return);
 }
 
 
